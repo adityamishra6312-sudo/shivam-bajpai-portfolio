@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+body { font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+::selection { background: #0b0b0a; color: #f4f2ee; }
+
+/* ---------- Typography system (v4 — final scale pass) ----------
+   Display  : Anton (headings)     Body : Inter     Editorial : Cormorant Garamond (italic)
+   Levels   : t-display > t-h1 > t-h2 > t-h3 > t-body > t-meta > t-label > t-button
+   Every display-weight level is clamp()-based. Ceilings intentionally kept modest
+   (display ≈6rem, h1 ≈4.5rem, h2 ≈3rem, h3 ≈1.75rem) so headings stay cinematic
+   without dominating the imagery and content around them. */
+@layer components {
+  .t-display { @apply font-display uppercase leading-[0.92] tracking-tight; font-size: clamp(2.75rem, 4.5vw + 1.25rem, 6rem); }
+  .t-h1      { @apply font-display uppercase leading-[0.94] tracking-tight; font-size: clamp(2.25rem, 3vw + 1.1rem, 4.5rem); }
+  .t-h2      { @apply font-display uppercase leading-[0.96]; font-size: clamp(1.75rem, 1.8vw + 0.9rem, 3rem); }
+  .t-h3      { @apply font-display uppercase leading-[1]; font-size: clamp(1.3rem, 0.9vw + 0.95rem, 1.75rem); }
+  .t-lede    { @apply font-serif leading-[1.3]; font-size: clamp(1.1rem, 0.7vw + 0.9rem, 1.4rem); }
+  .t-body    { @apply text-sm leading-relaxed md:text-base; }
+  .t-meta    { @apply font-mono text-[0.7rem] uppercase tracking-[0.18em]; }
+  .t-label   { @apply text-[0.7rem] uppercase tracking-[0.28em]; }
+  .t-button  { @apply text-[0.72rem] uppercase tracking-[0.25em]; }
+}
+
+/* Subtle static paper grain — one tiny tiled SVG, no animation, no repaint cost */
+.grain::after {
+  content: ''; position: fixed; inset: 0; z-index: 45; pointer-events: none; opacity: .055;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Link underline micro-interaction */
+.link-u { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .45s cubic-bezier(.22,1,.36,1); padding-bottom: 2px; }
+.link-u:hover, .link-u:focus-visible, .link-u[aria-current='true'] { background-size: 100% 1px; }
+
+/* Outlined numerals */
+.outline-num { color: transparent; -webkit-text-stroke: 1px rgba(244,242,238,.35); }
+
+/* Crop marks for the directing section */
+.crop { position: relative; }
+.crop::before, .crop::after, .crop > i::before, .crop > i::after {
+  content: ''; position: absolute; width: 18px; height: 18px; border-color: rgba(244,242,238,.55); border-style: solid; pointer-events: none;
+}
+.crop::before { top: -10px; left: -10px; border-width: 1px 0 0 1px; }
+.crop::after  { top: -10px; right: -10px; border-width: 1px 1px 0 0; }
+.crop > i::before { bottom: -10px; left: -10px; border-width: 0 0 1px 1px; }
+.crop > i::after  { bottom: -10px; right: -10px; border-width: 0 1px 1px 0; }
+
+/* Cursor (desktop, fine pointers only) */
+.cursor { position: fixed; top: 0; left: 0; z-index: 999; pointer-events: none; display: none; }
+.cursor-inner {
+  display: flex; align-items: center; justify-content: center; border-radius: 999px;
+  width: 10px; height: 10px; background: #f4f2ee; mix-blend-mode: difference;
+  transform: translate(-50%, -50%); transition: width .25s cubic-bezier(.22,1,.36,1), height .25s cubic-bezier(.22,1,.36,1), background .25s;
+  font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: #0b0b0a; overflow: hidden; white-space: nowrap;
+}
+.cursor.hover .cursor-inner { width: 30px; height: 30px; }
+.cursor.watch .cursor-inner { width: 64px; height: 64px; background: #f4f2ee; mix-blend-mode: normal; }
+@media (hover: hover) and (pointer: fine) { .cursor { display: block; } }
+
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid #b5502e; outline-offset: 4px; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
